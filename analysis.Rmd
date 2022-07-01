@@ -1,0 +1,16 @@
+---
+title: "Data Analysis Playground"
+author: "Khin Mon"
+output:
+  html_document: default
+  word_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE, message = FALSE,comment = NA, error = TRUE)
+```
+
+```{r load_dataset}
+# loading the dataset
+loaded_data <- read.csv("dataset/dataset.csv", stringsAsFactors = TRUE)
+loaded_data
+```
