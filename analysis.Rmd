@@ -9,8 +9,72 @@ output:
 knitr::opts_chunk$set(echo = TRUE,warning=FALSE, message = FALSE,comment = NA, error = TRUE)
 ```
 
+``` {r load_packages}
+# loading all required packages
+if(!require(knitr)){
+    install.packages("knitr")
+    library(knitr)
+}
+
+if(!require(kableExtra)){
+    install.packages("kableExtra", repos = "https://www.stats.bris.ac.uk/R/")
+    library(kableExtra)
+}
+
+if(!require(psych)){
+    install.packages("psych")
+    library(psych)
+}
+
+```
+
+# Introduction
+
+The provided dataset has 2000 observations with one categorical variable and 16 numeric variables (10 continuous and 6 discrete variables). 
+
+# Data Analysis
+
+The first step is we loaded the dataset and we will do the basic data analysis step by step to explore the provided dataset.
+
 ```{r load_dataset}
 # loading the dataset
 loaded_data <- read.csv("dataset/dataset.csv", stringsAsFactors = TRUE)
 loaded_data
+
+# splitting data only and label
+loaded_df <-loaded_data[,-ncol(loaded_data)]
+loaded_label <-loaded_data[,ncol(loaded_data)] # Group label
 ```
+
+## Descriptive Analysis
+
+```{r}
+kbl(head(loaded_data), caption="Loaded Dataset with some observations") %>% kable_classic(full_width = F, html_font = "Cambria")
+```
+
+In the loaded dataset, there are `r nrow(loaded_data)` observations with `r ncol(loaded_data)` variables which consists of:
+
+* 1 label, 
+* 10 continuous and 
+* 6 discrete variables. 
+
+```{r describe_dataset}
+# summarize data
+summary_data <- describe(loaded_data[,-ncol(loaded_data)], IQR=TRUE , skew=TRUE)
+summarydata <- summary_data[,c(3,4,8,5,9,13, 14)]
+kbl(summarydata, caption = "Summary Statistic of the dataset") %>% kable_classic(full_width = F, html_font = "Cambria")
+```
+
+According to the above summary table, there are no extreme values between minimum and maximum of each variable. So, even if there might be the outliers in the variables, those might not be so extreme to get removed from the dataset. 
+Low standard deviation means observations are close to the mean.
+
+## Exploratory Data Analysis
+
+### Missing Values
+
+There are `r sum(is.na(loaded_data))` missing values in this original dataset.
+[to be continued]
+
+### Analysing outliers and data distributions
+[to be continued]
+...
