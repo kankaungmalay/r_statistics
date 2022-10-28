@@ -2,7 +2,8 @@
 title: "Data Analysis Playground"
 author: "Khin Mon"
 output:
-  html_document: default
+  html_document:
+      toc: yes
   word_document: default
 ---
 ```{r setup, include=FALSE}
@@ -26,6 +27,17 @@ if(!require(psych)){
     library(psych)
 }
 
+if(!require(ggplot2)){
+    install.packages("ggplot2")
+    library(ggplot2)
+}
+
+# for melt
+if(!require(reshape2)){
+    install.packages("reshape2")
+    library(reshape2)
+}
+
 ```
 
 # Introduction
@@ -39,7 +51,7 @@ The first step is we loaded the dataset and we will do the basic data analysis s
 ```{r load_dataset}
 # loading the dataset
 loaded_data <- read.csv("dataset/dataset.csv", stringsAsFactors = TRUE)
-loaded_data
+#loaded_data
 
 # splitting data only and label
 loaded_df <-loaded_data[,-ncol(loaded_data)]
@@ -73,8 +85,32 @@ Low standard deviation means observations are close to the mean.
 ### Missing Values
 
 There are `r sum(is.na(loaded_data))` missing values in this original dataset.
-[to be continued]
 
 ### Analysing outliers and data distributions
+```{r check_outliers}
+# boxplots, item 1 to 4
+ggplot(melt(loaded_data[,c(1:4, 17)], id.var = "Group"), aes(x=variable, y=value, color = Group)) +
+  geom_boxplot() + 
+  facet_wrap( ~variable, scales="free") + 
+  labs(title = "Boxplot of variables vs values on five different groups") 
+
+# boxplots, item 5 to 8
+ggplot(melt(loaded_data[,c(5:8, 17)], id.var = "Group"), aes(x=variable, y=value, color = Group)) +
+  geom_boxplot() + 
+  facet_wrap( ~variable, scales="free")
+
+# boxplots, item 9 to 12 [pls try yourself]
+
+# boxplots, item 13 to 16 [pls try yourself]
+
+```
+From the above boxplots, we could see that almost all variables include the outliers. Some are left or right skewed distributions and apparently, there is no variable which follows normal distribution(bell-shaped).
+
+```{r frequency_histograms}
+ggplot(melt(loaded_data, id.var = "Group"), aes(value)) + 
+  geom_histogram(bins=15, aes(fill=Group)) + 
+  facet_wrap(~variable, scales = "free")
+```
+
 [to be continued]
 ...
