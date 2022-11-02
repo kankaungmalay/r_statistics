@@ -16,12 +16,23 @@
 - [365datascience](https://365datascience.com/courses/)
 - [R Markdown: An Incomplete History by Garrick Aden-Buie](https://www.garrickadenbuie.com/talk/toronto-data-workshop/)
 - [The Elements of Statistical Learning](https://hastie.su.domains/ElemStatLearn/printings/ESLII_print12_toc.pdf)
-- [Probabilistic Machine Learning](https://probml.github.io/pml-book/book1.html)
+
 
 ## Youtube
 - [Why R? Foundation, Youtube](https://www.youtube.com/channel/UCwLy_PYrnCEhCU-Ay2F5Drw)
 - [Crash Course: Statistics, Youtube](https://www.youtube.com/playlist?list=PLH2l6uzC4UEW3iJO4T0qUeUEp_X-f1U7S)
 - [Data science with R, Youtube](https://www.youtube.com/daniellenavarro77)
 
+# Codebooks
+- [Department for Transport](https://departmentfortransport.github.io/R-cookbook/)
+- [BBC](https://bbc.github.io/rcookbook/)
+- [ONS Data Science team](https://github.com/datasciencecampus/coffee-and-coding)
+- [Ministry of Justice](https://github.com/moj-analytical-services/coffee-and-coding-public)
 
+# R for Data Science
+- [R for Data Science](https://r4ds.had.co.nz/index.html)
+- [Advanced R by Hadley Wickham](http://adv-r.had.co.nz/)
 
+# ML
+- [Probabilistic Machine Learning](https://probml.github.io/pml-book/book1.html)
+- [Model-based Clustering and Classification for Data Science ](https://math.unice.fr/~cbouveyr/MBCbook/)

@@ -16,3 +16,5 @@
 - [Financial Times Visual Vocabulary](https://ft-interactive.github.io/visual-vocabulary/)
 - [BBC Visual and Data Journalism Cookbook for R](https://bbc.github.io/rcookbook/)
 - [Learning R without needing R (and RStudio) installed](https://tinystats.github.io/teacups-giraffes-and-statistics/01_introToR.html)
+
+
