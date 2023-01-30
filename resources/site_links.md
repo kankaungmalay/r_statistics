@@ -22,6 +22,7 @@
 - [Why R? Foundation, Youtube](https://www.youtube.com/channel/UCwLy_PYrnCEhCU-Ay2F5Drw)
 - [Crash Course: Statistics, Youtube](https://www.youtube.com/playlist?list=PLH2l6uzC4UEW3iJO4T0qUeUEp_X-f1U7S)
 - [Data science with R, Youtube](https://www.youtube.com/daniellenavarro77)
+- [Using python with Rmarkdown](https://www.youtube.com/watch?v=gn8oJ8FMSWY)
 
 # Codebooks
 - [Department for Transport](https://departmentfortransport.github.io/R-cookbook/)
@@ -36,3 +37,6 @@
 # ML
 - [Probabilistic Machine Learning](https://probml.github.io/pml-book/book1.html)
 - [Model-based Clustering and Classification for Data Science ](https://math.unice.fr/~cbouveyr/MBCbook/)
+
+# Missing Data: multiple Imputation
+- [Multiple Imputation](https://bookdown.org/mwheymans/bookmi/multiple-imputation.html)

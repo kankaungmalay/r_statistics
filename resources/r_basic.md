@@ -8,7 +8,8 @@
 
 - [A Very Short Introduction to R](https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf)
 - [R Markdown](https://rmarkdown.rstudio.com/lesson-1.html)
-- [RRmarkdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+- [Rmarkdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+- [Using the flextable R package](https://ardata-fr.github.io/flextable-book/index.html)
 
 # R Learning
 - [R for Data Science](https://r4ds.had.co.nz/index.html)

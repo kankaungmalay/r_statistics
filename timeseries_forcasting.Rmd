@@ -1,0 +1,137 @@
+---
+title: "TimeSeries Forecasting Practice(ARIMA model)"
+output:
+  html_document:
+      toc: yes
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=FALSE, message = FALSE,comment = NA, error = TRUE)
+```
+
+``` {r load_packages}
+#install.packages("summarytools")
+#install.packages("tseries")
+#install.packages("forecast")
+library(forecast)
+library(ggplot2)
+library(tseries)
+library(summarytools)
+```
+
+1. Perform exploratory data analysis(EDA)
+2. Decomposition of data
+3. Test the Stationarity 
+4. Fit a model used an automated algorithm
+5. Calculate forecasts
+
+```{r}
+#Reading the Airpaseengers data
+data("dataset/AirPassengers")
+tsdata<-AirPassengers
+```
+
+```{r}
+#Identifying the class of data
+class(tsdata)
+```
+
+### EDA
+```{r}
+#Observations of the time series data
+tsdata
+```
+```{r}
+sum(is.na(tsdata))
+```
+```{r}
+frequency(tsdata)
+```
+
+```{r}
+#Summary of the data and missi
+dfSummary(tsdata)
+```
+```{r}
+#Check the cycle of data and plot the raw data
+as.data.frame(tsdata)
+cycle(tsdata)
+```
+
+```{r}
+plot(tsdata, ylab="Passengers (1000s)", type="o")
+```
+```{r}
+# plot directly from a time series, no need to convert to a dataframe as required with ggplot2
+autoplot(tsdata) + labs(x ="Date", y = "Passenger numbers (1000's)", title="Air Passengers from 1949 to 1961") 
+```
+```{r}
+# to see any seasonal effects
+boxplot(tsdata ~ cycle(tsdata), xlab="Date", ylab = "Passenger Numbers (1000's)" ,main ="Monthly Air Passengers Boxplot from 1949 to 1961")
+```
+There do not appear to be any outliers and there are no missing values. Therefore no data cleaning is required.
+
+The multiplicative model:
+
+Y[t]=T[t]∗S[t]∗e[t]
+
+```{r}
+#Decomposing the data into its trend, seasonal, and random error components
+tsdata_decom <- decompose(tsdata, type = "multiplicative")
+plot(tsdata_decom)
+```
+### Testing the stationarity of the data
+
+Hypothesis test:
+
+The null hypothesis H0 : that the time series is non stationary
+The alternative hypothesis HA : that the time series is stationary
+```{r}
+#Augmented Dickey-Fuller Test
+adf.test(tsdata) 
+```
+
+Another way to test for stationarity is to use autocorrelation.
+```{r}
+#Autocorrelation test
+autoplot(acf(tsdata,plot=FALSE))+ labs(title="Correlogram of Air Passengers data") 
+```
+```{r}
+# Review random time series for any missing values
+tsdata_decom$random
+```
+
+```{r}
+autoplot(acf(tsdata_decom$random[7:138],plot=FALSE))+ labs(title="Correlogram of Air Passengers Random Component") 
+```
+
+```{r}
+tsdata
+```
+
+### Fitting the model
+```{r}
+# 1) Linear model ?
+autoplot(tsdata) + labs(x ="Date", y = "Passenger numbers (1000's)", title="Air Passengers data") 
+```
+```{r}
+# 2) ARIMA Model
+arimats <- auto.arima(tsdata)
+arimats
+```
+The ARIMA fitted model:
+
+Y^=0.5960Yt−2+0.2143Yt−12−0.9819et−1+E
+
+```{r}
+library(ggfortify)
+ggtsdiag(arimats)
+```
+### Forecast of Arima Model
+```{r}
+fts <- forecast(arimats, level = c(95))
+autoplot(fts)
+```
+
+Ref: http://rstudio-pubs-static.s3.amazonaws.com/311446_08b00d63cc794e158b1f4763eb70d43a.html
