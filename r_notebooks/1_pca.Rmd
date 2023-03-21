@@ -1,0 +1,41 @@
+---
+title: "Principal Component Analysis (PCA)"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE, include=TRUE}
+library(ade4)
+library(factoextra)
+library(corrplot)
+```
+## Cars Dataset
+
+```{r}
+
+data("mtcars")
+
+corrplot(cor(mtcars))
+```
+
+```{r }
+mypca<-dudi.pca(mtcars[,1:10],scannf = F)
+mypca
+```
+
+```{r}
+fviz_pca_biplot(mypca)
+```
+
+```{r }
+## alter this code to improve it
+mypca<-dudi.pca(mtcars[,1:10],scannf = F)
+fviz_pca_biplot(mypca,repel = T)
+fviz_pca_biplot(mypca,repel = T,label = "ind",title = "Car model")
+fviz_pca_biplot(mypca,repel = T,label="var",title="Car variables")
+```
+
+
