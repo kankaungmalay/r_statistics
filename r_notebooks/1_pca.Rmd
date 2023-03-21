@@ -7,18 +7,39 @@ output: html_notebook
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 ```
 
-```{r, warning=FALSE, message=FALSE, include=TRUE}
-library(ade4)
-library(factoextra)
-library(corrplot)
+```{r load_packages, warning=FALSE, message=FALSE, include=TRUE}
+# loading all required packages
+
+if(!require(ade4)){
+    install.packages("ade4")
+    library(ade4)
+}
+
+if(!require(factoextra)){
+    install.packages("factoextra")
+    library(factoextra)
+}
+
+if(!require(corrplot)){
+    install.packages("corrplot")
+    library(corrplot)
+}
+
+if(!require(kableExtra)){
+    install.packages("kableExtra", repos = "https://www.stats.bris.ac.uk/R/")
+    library(kableExtra)
+}
 ```
 ## Cars Dataset
 
-```{r}
-
+```{r load_dataset}
 data("mtcars")
-
 corrplot(cor(mtcars))
+```
+## Descriptive Analysis
+
+```{r}
+kbl(head(mtcars), caption="Loaded Dataset with some observations") %>% kable_classic(full_width = F, html_font = "Cambria")
 ```
 
 ```{r }
@@ -31,7 +52,6 @@ fviz_pca_biplot(mypca)
 ```
 
 ```{r }
-## alter this code to improve it
 mypca<-dudi.pca(mtcars[,1:10],scannf = F)
 fviz_pca_biplot(mypca,repel = T)
 fviz_pca_biplot(mypca,repel = T,label = "ind",title = "Car model")
