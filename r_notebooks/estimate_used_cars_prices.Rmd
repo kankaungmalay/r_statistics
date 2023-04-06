@@ -1,0 +1,267 @@
+---
+title: 'Estimating the prices of the used cars'
+author: 'Khin Mon'
+output:
+  word_document: 
+    toc: true
+  html_document: 
+    toc: true
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+# do not change these options
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(error = TRUE,comment=NA) # do not edit this line.
+```
+
+# Loading the packages
+
+```{r libraries, include=FALSE}
+# load required libraries / additional files
+source("../mypackages.R")
+source("../helperFunctions.R")
+```
+
+```{r data}
+# load dataset
+CarPrice <- read.csv("../dataset/used_cars.csv")
+head(CarPrice)
+```
+
+
+# Data description
+
+Dataset contains the following variables:
+
+- brand (manufacturer)
+- model (of car)
+- year (of registration of the car)
+- price (in GB pounds)
+- transmission (type of gearbox)
+- mileage (total distance covered by the car)
+- fuelType (type of fuel used by the car)
+- tax (annual cost of vehicle tax)
+- mpg (miles per gallon - a measure of fuel efficiency)
+- engineSize (size of the engine in litres)
+
+
+# 1) Data Preparation
+
+Filtering the dataset with the following properties:
+
+- mileage less than 60000
+- Manual transmission
+- Petrol engine (fuelType)
+- Costing less than £200 in annual Vehicle Tax.
+
+```{r dataprep}
+# filtering these properties
+filtered_CarPrice <- filter(CarPrice, mileage < 60000 & transmission == "Manual" & fuelType == "Petrol" & tax < 200)
+head(filtered_CarPrice)
+
+# select a random sample of 2000 rows 
+set.seed(29764) # for reproducibility!  29764
+n_subsample <- 2000 
+bootstrap_CarPrice <-rep(NA, n_subsample) # create an empty vector to store random samples 
+
+# index <- sample(seq_along(filtered_CarPrice$price), n_subsample, replace=FALSE) 
+# index
+# bootstrap_CarPrice <- filtered_CarPrice[index, ]
+
+for(i in seq_len(n_subsample)){
+  index <- sample(seq_along(filtered_CarPrice$price),size=n_subsample,replace=FALSE) 
+  bootstrap_CarPrice <- filtered_CarPrice[index,]
+}
+head(bootstrap_CarPrice) # df with 2000 rows and 10 cols
+
+# removing the redundant variables
+UsedCarPrice = subset(bootstrap_CarPrice, select = -c(transmission, fuelType) )
+head(UsedCarPrice) # df with 2000 rows and 8 cols
+
+```
+
+
+# 2) Exploratory Data Analysis
+
+## 2.1) Descriptive Statistics
+
+For continuous variables, min, median, mean, max and 1st Qu to 3rd Qu statistics are appropriate to check. 
+
+For categorical variables(brand, model and year),labeling correctly is needed. 
+
+```{r DescriptiveStats}
+# checking the dataset
+#view(dfSummary(UsedCarPrice))
+```
+
+```{r}
+# Code factor levels for categorial variables
+UsedCarPrice$brand <- factor(UsedCarPrice$brand, labels=c("Audi", "BMW", "Ford", "Mercedes"))
+
+# levels(UsedCarPrice$model)
+UsedCarPrice$model <- factor(UsedCarPrice$model, labels=c(
+  "1 Series", "2 Series", "3 Series", "4 Series", "A Class",
+  "A1", "A3", "A4", "A5", "B-MAX",
+  "B Class", "C-MAX", "C Class", "CL Class", "CLA Class",
+  "EcoSport", "Fiesta", "Focus", "Galaxy", "GLA Class",
+  "Grand C-MAX", "KA", "Ka+", "Kuga", "Mondeo",
+  "Mustang", "Puma", "Q2", "Q3", "S-MAX",
+  "SL CLASS", "TT", "X1"))
+
+table(UsedCarPrice$year) 
+# levels(UsedCarPrice$year)
+UsedCarPrice$year <- factor(UsedCarPrice$year, labels=c(
+   "2008", "2009", "2011", "2012", "2013", "2014", 
+   "2015", "2016", "2017", "2018",  "2019", "2020"))
+
+# summary statistics of continuous columns
+#flextable_describe(X=UsedCarPrice[,c(4:8)])
+
+# Summary statistics of price of cars by each brand
+t1 <- psych::describeBy(UsedCarPrice$price, group=UsedCarPrice$brand, quant=c(.25,.75))
+TB1 <- matrix(NA,nrow=max(seq_along(t1)), ncol=ncol(t1[[1]]))
+rownames(TB1) <- levels(UsedCarPrice$brand)
+colnames(TB1) <- colnames(t1[[1]])
+for(i in seq_along(t1)){
+  TB1[i,] <- unlist(t1[[i]])
+}
+TB1 <- TB1[,-1]
+
+# format = "html", this did not work when knitting as word file, so commented out 
+# TB1%>% kbl(format = "html", digits = 2) %>% kable_classic(html_font="Cambria",full_width=FALSE)
+
+TB1
+```
+
+
+## 2.2) Exploratory Graphs
+
+To explore the categorical variables, bar charts are appropriate because we can easily check the distributions of categorical data with bar charts. 
+
+Also, the distribution and relationship between two continuous variables such as numbers and datetime can be easily checked with the scatterplots. 
+
+
+```{r ExploratoryGraphs}
+# categorical variable - brand
+ggplot(data = UsedCarPrice) +
+  geom_bar(mapping = aes(x = brand)) + 
+  xlab("Manufacturer of Cars") + 
+  ggtitle("Distribution of Manufacturers")
+
+# categorical variable - model
+ggplot(data = UsedCarPrice) +
+  geom_bar(mapping = aes(x = model)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  xlab("Models of Car") + ggtitle("Distribution of Car Models")
+
+# two continuous variables, the relationship between price and mpg
+ggplot(UsedCarPrice, aes(x = mpg, y = log(price,base = 10))) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("Price in GB pounds (log10)") +
+  xlab("Miles per gallon") +
+  ggtitle("Miles per gallon Vs Price in GB pounds")
+
+# two continuous variables, the relationship between price and mileage
+ggplot(UsedCarPrice, aes(x = mileage, y = log(price,base = 10))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("Price in GB pounds (log10)") +
+  xlab("Total distance covered by the car(mileage)") +
+  ggtitle("Mileage Vs Price")
+
+# two continuous variables, the relationship between price and enginesize
+ggplot(UsedCarPrice, aes(x = engineSize, y = price)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("Price in GB pounds (log10)") +
+  xlab("Engine Size") +
+  ggtitle("EngineSize Vs Price")
+
+# two continuous variables, the relationship between price and annual vehicle tax
+ggplot(UsedCarPrice, aes(x = tax, y = log(price,base = 10) , colour = year)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ylab("Price in GB pounds (log10)") +
+  xlab("Annual cost of vehicle tax") +
+  ggtitle("Annual cost of vehicle tax Vs Price")
+
+```
+
+The first "brand" graph, most people might choose the Ford brand and so it stands in the top among others. Mercedes looks less popular in the used car brand and it has minimum count.
+
+The second "model" graph, Fiesta model has max records and CLA Class(2), Galaxy(1), Mustang(1), SL CLASS(1) and X2(1) models have a few counts in each.(There is no missing values in this variable. So, the min is 1 car.)
+
+In third graph, I explored the relationship between miles per gallon and the price of car. It looks like there is negative correlation between those two variables. When mgp increases, the the price of car looks decrease. Also, the variation of price is not constant across mpg.
+
+In fourth graph, it also has negative correlation between price and mileage.
+
+The last fifth and sixth graph generally show the positive correlations with price of used cars.
+
+## 2.3) Correlations
+
+```{r linearcor}
+# only numeric variables
+X<-dplyr::select_if(UsedCarPrice, is.numeric)
+M <- cor(X)
+corrplot(M)
+
+# the linear correlation between variables price and the independent variables
+with(UsedCarPrice, cor(price, mpg)) # -0.6126887 (strongest negative correlation)
+with(UsedCarPrice, cor(price, mileage))  # -0.5365772
+with(UsedCarPrice, cor(price, engineSize))  # 0.4690952 (strongest positive correlation)
+with(UsedCarPrice, cor(price, tax))  # 0.408758 
+
+```
+
+# 3) Bivariate relationship
+
+a. Which of the potential explanatory variables has the strongest linear relationship with the dependent variable?
+
+According to the corrplot and calculation of linear correlation between variables, mpg(miles per gallon) has strongest negative linear relationship with the price.
+
+
+b. Creating a linear model to model this relationship.
+
+
+```{r model1}
+model1<-lm(price ~ mpg, data=X)
+#as_flextable(model1)
+
+```
+
+c. Explain and interpret the model:
+
+
+The regression equation is: $$\mbox{price} = 35448.29 - 400.70 \times \mbox{mpg} $$
+
+An increase of 1 unit in mpg(independent, X) leads to an average decrease of 400 unit in price(dependent, Y).
+
+The p-value for the whole model and mpg is highly significant (0.0000).
+
+
+d. Comment on the performance of the model, including comments on overall model fit and the validity of model assumptions. 
+
+
+R-squared of the model = `r round(summary(model1)$r.sq,4)`. It means this model explains `r round(summary(model1)$r.sq,4)*100`% of variation in price. 
+
+In residual linearity plots, those are analyzing the linearity of the fitted values and residuals. There are some exceptional errors when the model predictions(on x-axis) are around 20K and 25K compared to below those. 
+
+In influential Observations plot, it looks like all of the leverage points are inside of the contour lines. So, model adjustments might not have been needed. 
+
+In normality of residuals plots, dots are along with the lines except some of those(where model is not predicting well) near the end. The last one looks quite ok.
+
+```{r model1performance}
+# check_model(model1) # to do: check the required package to be installed 
+```
+
+
+## 3.1) Bootstrap
+
+a. Using bootstrapping on the model to obtain a 95% confidence interval of the estimate of the slope parameter.
+
+```{r bootstrap}
+# TBC
+```
+
